@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -47,18 +47,23 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
 
 //##############################################################################################
 
 var debug = require('debug')('exrepss001:server');
 var http = require('http');
+var fs = require('fs');
+var https = require('https');
+/*var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};*/
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '5000');
+var port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
 
 /**
@@ -66,12 +71,15 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+/*var httpsServer = https.createServer(credentials, app);*/
+
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
+server.timeout = 600000
+/*httpsServer.listen(8443);*/
 server.on('error', onError);
 server.on('listening', onListening);
 
