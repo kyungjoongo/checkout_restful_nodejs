@@ -21,14 +21,21 @@ router.get('/event_list', function (req, _response, next) {
 //    console.log('http://kr.ufc.com' + fight_title);
 
         var url = 'http://kr.ufc.com' + fight_title;
-
-
         fight_title  = fight_title.replace('/event/', '').replace('#/fight', '');
+
+
+        var imageLeft = $(this).parent().parent().next().children().find('.frame-left').children().children('img').attr('src');
+        var imageRight = $(this).parent().parent().next().children().find('.frame-right').children().children('img').attr('src');
+
+        imageLeft ='http://'+  imageLeft.substring(2,imageLeft.length)
+        imageRight ='http://'+  imageRight.substring(2,imageRight.length)
 
         fianlresultJson.push({
 
-            title : fight_title,
-            url :url
+            title: fight_title,
+            url: url,
+            imageLeft: imageLeft,
+            imageRight: imageRight
 
         });
 
@@ -54,14 +61,6 @@ router.get('/fightcard_detail2/:title', function (req, _response, next) {
     /*http://www.ufc.com/event/UFC-220#/fight*/
 /*
     http://www.ufc.com/event/UFC-220*/
-
-    /*var res = syncRequest('GET', 'http://www.ufc.com/event/UFC-220');
-
-    /!*ufc-fight-night-charlotte-january-27-2018*!/
-
-    var res = syncRequest('GET', 'http://www.ufc.com/event/ufc-fight-night-charlotte-january-27-2018');*/
-
-    /*var res_usa = syncRequest('GET', 'http://www.ufc.com/event/ufc-fight-night-st-louis-january-14-2018?f1=Jeremy-Stephens&f2=Dooho-Choi');*/
 
 
 
@@ -93,7 +92,23 @@ router.get('/fightcard_detail2/:title', function (req, _response, next) {
         figher_name1 = figher_name1.replace("WIN", "").replace('**', '').trim();
         figher_name2 = figher_name2.replace("WIN", "").replace('**', '').trim();
 
-        console.log("####"+ figher_name1);
+        var fighterfirstname = $(this).find('.fighter-first-name').html();
+        console.log('fighterfirstname'+ fighterfirstname);
+
+
+
+        var fighter_names1= fighter_image1.split("/")
+        var extract_fighter_name1 =  fighter_names1[5];
+
+        var fighter_names2= fighter_image2.split("/")
+        var extract_fighter_name2 =  fighter_names2[5];
+
+        console.log("###-->" + extract_fighter_name1 +"###"+  extract_fighter_name2 );
+
+        fighter_image1 ='http://'+  fighter_image1.substring(2,fighter_image1.length)
+        fighter_image2 ='http://'+  fighter_image2.substring(2,fighter_image2.length)
+
+        console.log("####"+ fighter_image1);
         console.log("####"+ figher_name2);
 
         imageListArray.push({
@@ -101,8 +116,9 @@ router.get('/fightcard_detail2/:title', function (req, _response, next) {
             fighter_image2: fighter_image2,
             figher_name1 : figher_name1,
             figher_name2 : figher_name2,
+            extract_fighter_name1 : extract_fighter_name1,
+            extract_fighter_name2 : extract_fighter_name2
         })
-
 
     });
 

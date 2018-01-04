@@ -21,10 +21,20 @@ $('#ad-area').each(function () {
 
     var url = 'http://kr.ufc.com' + fight_title;
 
+
+
+    var imageLeft = $(this).parent().parent().next().children().find('.frame-left').children().children('img').attr('src');
+    var imageRight = $(this).parent().parent().next().children().find('.frame-right').children().children('img').attr('src');
+
+    imageLeft ='http://'+  imageLeft.substring(2,imageLeft.length)
+    imageRight ='http://'+  imageRight.substring(2,imageRight.length)
+
     fianlresultJson.push({
 
-        title : fight_title,
-        url :url
+        title: fight_title,
+        url: url,
+        imageLeft: imageLeft,
+        imageRight: imageRight
 
     });
 

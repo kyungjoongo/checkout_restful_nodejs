@@ -28,6 +28,8 @@ $('#titleArea').each(function () {
 
 var imageListArray = new Array()
 $('.fight').each(function () {
+
+
     var fighter_image1 = $(this).children().children().children('img').attr('src');
     var fighter_image2 = $(this).children().next().next().children().children('img').attr('src');
 
@@ -38,7 +40,23 @@ $('.fight').each(function () {
     figher_name1 = figher_name1.replace("WIN", "").replace('**', '').trim();
     figher_name2 = figher_name2.replace("WIN", "").replace('**', '').trim();
 
-    console.log("####"+ figher_name1);
+    var fighterfirstname = $(this).find('.fighter-first-name').html();
+    console.log('fighterfirstname'+ fighterfirstname);
+
+
+
+    var fighter_names1= fighter_image1.split("/")
+    var extract_fighter_name1 =  fighter_names1[5];
+
+    var fighter_names2= fighter_image2.split("/")
+    var extract_fighter_name2 =  fighter_names2[5];
+
+    console.log("###-->" + extract_fighter_name1 +"###"+  extract_fighter_name2 );
+
+    fighter_image1 ='http://'+  fighter_image1.substring(2,fighter_image1.length)
+    fighter_image2 ='http://'+  fighter_image2.substring(2,fighter_image2.length)
+
+    console.log("####"+ fighter_image1);
     console.log("####"+ figher_name2);
 
     imageListArray.push({
@@ -46,6 +64,8 @@ $('.fight').each(function () {
         fighter_image2: fighter_image2,
         figher_name1 : figher_name1,
         figher_name2 : figher_name2,
+        extract_fighter_name1 : extract_fighter_name1,
+        extract_fighter_name2 : extract_fighter_name2
     })
 
 
