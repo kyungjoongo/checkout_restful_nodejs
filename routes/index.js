@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var beautify = require("json-beautify");
+var cheerio = require('cheerio');
+    var requestPromise = require('request-promise')
+var request = require('request');
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -42,12 +46,106 @@ router.get('/getRentalHouseList', function (req, res, next) {
     });
 });
 
-var cheerio = require('cheerio');
-var rp = require('request-promise')
-var request = require('request');
 
 
-router.get('/scrap001', function (req, res, next) {
+
+
+router.get('/shoe/:page', function (req, res, next) {
+
+
+    var pPage = req.params.page
+    var page = '';
+
+    if (pPage == '1') {
+
+        page = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?p=96';
+    } else if (pPage == '2') {
+        page = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=96&p=96'
+
+    } else if (pPage == '3') {
+        page = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=192&p=96'
+
+    } else if (pPage == '4') {
+
+        page = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=288&p=96'
+    }
+
+
+    var _resultJson = [];
+
+    requestPromise(page).then(html => {
+        var reqResult = parseDomData(html);
+
+        for ( var i=1; i<reqResult.length;i++){
+
+            _resultJson.push(reqResult[i])
+        }
+
+        res.json({result: _resultJson});
+
+    })
+
+
+});//scrap001 route end
+
+
+router.get('/shoesListAll', function (req, res, next) {
+
+
+    var page1 = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?p=96';
+    var page2 = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=96&p=96'
+    var page3 = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=192&p=96'
+    var page4 = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?skip=288&p=96'
+
+    var _resultJson = [];
+
+    requestPromise(page1).then(html => {
+        var reqResult = parseDomData(html);
+
+        for (var i = 0; i < reqResult.length; i++) {
+
+            _resultJson.push(reqResult[i])
+        }
+
+        return requestPromise(page2)
+
+    }).then(page2 => {
+
+        var reqResult = parseDomData(page2);
+
+        for (var i = 0; i < reqResult.length; i++) {
+
+            _resultJson.push(reqResult[i])
+        }
+
+        return requestPromise(page3)
+    }).then(page3 => {
+
+        var reqResult = parseDomData(page3);
+
+        for (var i = 0; i < reqResult.length; i++) {
+
+            _resultJson.push(reqResult[i])
+        }
+
+        return requestPromise(page4)
+    }).then(page4 => {
+
+        var reqResult = parseDomData(page4);
+
+        for (var i = 0; i < reqResult.length; i++) {
+
+            _resultJson.push(reqResult[i])
+        }
+
+        res.json({result: _resultJson});
+    })
+
+
+});//scrap001 route end
+
+
+router.get('/shoesListAll2', function (req, res, next) {
 
 
     var page1 = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?p=96';
@@ -58,44 +156,59 @@ router.get('/scrap001', function (req, res, next) {
 
     var _resultJson = [];
 
-    rp(page1).then(html=>{
+    requestPromise(page1).then(html => {
         var reqResult = parseDomData(html);
 
-        _resultJson.push(reqResult)
 
-        return rp(page2)
+        _resultJson.push({
 
-    }).then(page2=>{
+            data: reqResult
+        })
+
+
+        return requestPromise(page2)
+
+    }).then(page2 => {
 
         var reqResult = parseDomData(page2);
 
-        _resultJson.push(reqResult)
 
-        return rp(page3)
+        _resultJson.push({
+
+            data: reqResult
+        })
 
 
-    }).then(page3=>{
+        return requestPromise(page3)
+    }).then(page3 => {
 
         var reqResult = parseDomData(page3);
 
-        _resultJson.push(reqResult)
+
+        _resultJson.push({
+
+            data: reqResult
+        })
 
 
-        return rp(page4)
-    }).then(page4=>{
+        return requestPromise(page4)
+    }).then(page4 => {
 
         var reqResult = parseDomData(page4);
 
-        _resultJson.push(reqResult)
+
+        _resultJson.push({
+
+            data: reqResult
+        })
+
 
         res.json({result: _resultJson});
     })
 
 
-
-
-
 });//scrap001 route end
+
 
 function parseDomData(html) {
 
@@ -124,22 +237,104 @@ function parseDomData(html) {
 
         var shoesFullname = shoe_brand + " " + shoe_name;
 
+        var shoeDetailUrl = 'http://www.roadrunnersports.com/rrs/products/' + shoes_id;
 
         resultJson.push({
-            shoesFullname: shoesFullname,
-            shoesId: shoes_id,
-            imageBaseUrl: 'http://s7ondemand1.scene7.com/is/image/roadrunnersports/'
+            "shoesFullname": shoesFullname,
+            "shoesId": shoes_id,
+            "imageBaseUrl": 'http://s7ondemand1.scene7.com/is/image/roadrunnersports/',
+            "shoeDetailUrl": shoeDetailUrl
+
         })
-
-        //largeIMage  :http://s7ondemand1.scene7.com/is/image/roadrunnersports/08911
-
 
     })
 
-    return resultJson;
+    // console.log(resultJson);
+
+    res.json({result: resultJson});
 
 
 }
+
+
+router.get('/__shoes/:page', function (req, res, next) {
+
+
+    var pPage = req.params.page
+
+
+    var page = 'http://www.roadrunnersports.com/rrs/mensshoes/mensshoesrunning/?p=96';
+
+
+    var finalResult = [];
+
+
+    requestPromise(page).then(html => {
+        var reqResult = parseDomData(html);
+
+
+        finalResult.push({
+
+            data: reqResult
+        })
+
+
+        res.json({result: finalResult});
+
+    });
+
+
+});//scrap001 route end
+
+
+
+router.get('/getShoesInfo/:shoeId', function (req, res, next) {
+
+
+    var shoeId = req.params.shoeId
+
+
+    var page = 'http://www.roadrunnersports.com/rrs/products/'+ shoeId;
+    var samplepage = 'http://www.roadrunnersports.com/rrs/products/14948'
+
+
+    var finalResult = [];
+
+
+    requestPromise(page, function(error, response, body) {
+        if (error) throw error;
+
+        var $ = cheerio.load(body);
+
+        shoeDetail= $('#product_desc_content').children().children("p").text();
+
+        var shoeType = $('#videoLinkButton').next().children().children("img").attr('alt');
+
+
+        console.log(shoeDetail);
+        console.log(shoeType);
+
+        if ( shoeType == undefined){
+            shoeType = 'none';
+        }else{
+
+            var arrShoeType  = shoeType.split(':');
+            shoeType = arrShoeType[0];
+        }
+
+        var result ={
+
+            shoeDetail : shoeDetail,
+            shoeType : shoeType
+
+        }
+
+        res.json({result: result});
+
+    })
+
+});//scrap001 route end
+
 
 
 module.exports = router;
